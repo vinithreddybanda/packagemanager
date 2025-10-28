@@ -7,23 +7,82 @@
 	<title>Markdown Compiler Viewer</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
 	<style>
-		body { font-family: Arial, sans-serif; margin: 0; display: flex; height: 100vh; }
-		#sidebar { width: 250px; background: #222; color: #fff; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			display: flex;
+			min-height: 100vh;
+			height: 100vh;
+		}
+		#sidebar {
+			width: 250px;
+			background: #222;
+			color: #fff;
+			padding: 20px;
+			box-sizing: border-box;
+			overflow-y: auto;
+			transition: width 0.3s;
+		}
 		#sidebar h2 { margin-top: 0; }
 		#sidebar ul { list-style: none; padding: 0; }
 		#sidebar li { margin: 10px 0; }
 		#sidebar a { color: #90cdf4; text-decoration: none; }
 		#sidebar a.active { font-weight: bold; color: #fff; }
-		#main { flex: 1; padding: 30px; overflow-y: auto; background: #f9f9f9; }
-		.markdown-body { max-width: 900px; margin: auto; }
-		/* Make markdown-body use GitHub style */
+		#main {
+			flex: 1;
+			padding: 30px;
+			overflow-y: auto;
+			background: #f9f9f9;
+			min-width: 0;
+		}
 		.markdown-body {
+			max-width: 900px;
+			margin: auto;
 			box-sizing: border-box;
 			min-width: 200px;
 			padding: 45px;
 			background: #fff;
 			border-radius: 8px;
 			box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+			word-break: break-word;
+		}
+		@media (max-width: 900px) {
+			.markdown-body {
+				padding: 20px;
+			}
+			#main {
+				padding: 10px;
+			}
+		}
+		@media (max-width: 700px) {
+			body {
+				flex-direction: column;
+			}
+			#sidebar {
+				width: 100%;
+				padding: 10px 10px 0 10px;
+				position: relative;
+				background: #222;
+				border-bottom: 1px solid #444;
+			}
+			#main {
+				padding: 10px;
+			}
+			.markdown-body {
+				padding: 10px;
+			}
+		}
+		@media (max-width: 500px) {
+			#sidebar h2 {
+				font-size: 1.1em;
+			}
+			#sidebar a {
+				font-size: 0.95em;
+			}
+			.markdown-body {
+				font-size: 0.98em;
+				padding: 5px;
+			}
 		}
 	</style>
 	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
