@@ -2,6 +2,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<style>
+		body {
+			font-family: 'Segoe UI', Arial, sans-serif;
+			margin: 0;
+			background: #f4f6fb;
+		}
+		#header {
+			width: 100%;
+			background: linear-gradient(90deg, #2563eb 0%, #1e293b 100%);
+			color: #fff;
+			padding: 18px 0 16px 0;
+			text-align: center;
+			font-size: 2em;
+			font-weight: 600;
+			letter-spacing: 1px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+			position: sticky;
+			top: 0;
+			z-index: 1100;
+		}
+		#container {
+			display: flex;
+			min-height: calc(100vh - 60px);
+		}
+		#sidebar {
+			background: #222;
+			color: #fff;
+			padding: 24px 18px 24px 18px;
+			box-sizing: border-box;
+			overflow-y: auto;
+			min-width: 220px;
+			width: 250px;
+			transition: left 0.3s, box-shadow 0.3s;
+			box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+		}
+		#sidebar h2 {
+			margin-top: 0;
+			font-size: 1.2em;
+			font-weight: 500;
+			letter-spacing: 0.5px;
+		}
+		#sidebar ul { list-style: none; padding: 0; margin: 0; }
+		#sidebar li { margin: 12px 0; }
+		#sidebar a {
+			color: #90cdf4;
+			text-decoration: none;
+			font-size: 1.08em;
+			padding: 6px 10px;
+			border-radius: 5px;
+			display: block;
+			transition: background 0.2s, color 0.2s;
+		}
+		#sidebar a:hover {
+			background: #334155;
+			color: #fff;
+		}
+		#sidebar a.active {
+			font-weight: bold;
+			color: #fff;
+			background: #2563eb;
+		}
+		#main {
+			flex: 1;
+			padding: 36px 18px 36px 18px;
+			overflow-y: auto;
+			background: #f4f6fb;
+			min-width: 0;
+		}
+		.markdown-body {
+			max-width: 900px;
+			margin: auto;
+			box-sizing: border-box;
+			min-width: 200px;
+			padding: 45px;
+			background: #fff;
+			border-radius: 12px;
+			box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+			word-break: break-word;
+		}
+		#menu-btn {
+			display: none;
+		}
+		#close-btn {
+			display: none;
+		}
+		#overlay {
+			display: none;
+		}
+		@media (max-width: 900px) {
+			.markdown-body {
+				padding: 20px;
+			}
+			#main {
+				padding: 10px;
+			}
+		}
+		@media (max-width: 700px) {
+			#container {
+				flex-direction: column;
+			}
+			#sidebar {
+				position: fixed;
+				left: -100vw;
+				top: 0;
+				height: 100vh;
+				width: 80vw;
+				max-width: 350px;
+				z-index: 1002;
+				box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+				padding-top: 60px;
+			}
+			#sidebar.open {
+				left: 0;
+			}
+			#overlay {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				background: rgba(0,0,0,0.2);
+				z-index: 1000;
+			}
+			#overlay.show {
+				display: block;
+			}
+			#menu-btn {
+				display: block;
+				position: fixed;
+				top: 18px;
+				left: 18px;
+				z-index: 1003;
+				background: #2563eb;
+				color: #fff;
+				border: none;
+				padding: 10px 16px;
+				border-radius: 6px;
+				box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+				font-size: 1.3em;
+				cursor: pointer;
+				transition: background 0.2s;
+			}
+			#menu-btn:hover {
+				background: #1e293b;
+			}
+			#close-btn {
+				display: inline;
+				float: right;
+				cursor: pointer;
+				font-size: 1.5em;
+				color: #fff;
+				margin-top: -2px;
+			}
+		}
+		@media (max-width: 500px) {
+			#header {
+				font-size: 1.2em;
+				padding: 12px 0 10px 0;
+			}
+			#sidebar h2 {
+				font-size: 1em;
+			}
+			#sidebar a {
+				font-size: 0.98em;
+			}
+			.markdown-body {
+				font-size: 0.98em;
+				padding: 5px;
+			}
+		}
+		@media (min-width: 701px) {
+			#menu-btn, #close-btn, #overlay { display: none !important; }
+			#sidebar { position: static !important; left: 0 !important; height: auto !important; width: 250px !important; max-width: none !important; box-shadow: none !important; padding-top: 0 !important; }
+		}
+	</style>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Markdown Compiler Viewer</title>
@@ -88,18 +264,51 @@
 	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-	<button id="menu-btn" aria-label="Open menu" style="display:none;position:fixed;top:16px;left:16px;z-index:1001;background:#222;color:#fff;border:none;padding:10px 16px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.08);font-size:1.2em;cursor:pointer;">
-		&#9776;
-	</button>
-	<div id="sidebar">
-		<h2>Markdown Labs <span id="close-btn" style="display:none;float:right;cursor:pointer;font-size:1.3em;">&times;</span></h2>
-		<ul id="file-list"></ul>
+	<div id="header">DevOps Labs & Package Manager Explorer</div>
+	<button id="menu-btn" aria-label="Open menu" style="display:none;">&#9776;</button>
+	<div id="overlay"></div>
+	<div id="container">
+		<div id="sidebar">
+			<h2>Markdown Labs <span id="close-btn" style="display:none;">&times;</span></h2>
+			<ul id="file-list"></ul>
+		</div>
+		<div id="main">
+			<div id="content" class="markdown-body">Select a lab to view its content.</div>
+		</div>
 	</div>
-	<div id="main">
-		<div id="content" class="markdown-body">Select a lab to view its content.</div>
-	</div>
-	<div id="overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.2);z-index:1000;"></div>
 	<script>
+		const sidebar = document.getElementById('sidebar');
+		const menuBtn = document.getElementById('menu-btn');
+		const closeBtn = document.getElementById('close-btn');
+		const overlay = document.getElementById('overlay');
+
+		function openSidebar() {
+			sidebar.classList.add('open');
+			overlay.classList.add('show');
+			closeBtn.style.display = 'inline';
+		}
+		function closeSidebar() {
+			sidebar.classList.remove('open');
+			overlay.classList.remove('show');
+			closeBtn.style.display = 'none';
+		}
+		menuBtn.onclick = openSidebar;
+		closeBtn.onclick = closeSidebar;
+		overlay.onclick = closeSidebar;
+
+		function handleResize() {
+			if(window.innerWidth <= 700) {
+				closeSidebar();
+				menuBtn.style.display = 'block';
+			} else {
+				menuBtn.style.display = 'none';
+				closeBtn.style.display = 'none';
+				overlay.classList.remove('show');
+				sidebar.classList.remove('open');
+			}
+		}
+		window.addEventListener('resize', handleResize);
+		handleResize();
 		// List of markdown files in the workspace
 		const mdFiles = [
 			"docker-commands-lab5.md",
@@ -115,11 +324,7 @@
 
 		const fileList = document.getElementById('file-list');
 		const content = document.getElementById('content');
-		const sidebar = document.getElementById('sidebar');
-		const menuBtn = document.getElementById('menu-btn');
-		const closeBtn = document.getElementById('close-btn');
-		const overlay = document.getElementById('overlay');
-
+		// ...existing code...
 		mdFiles.forEach((file, idx) => {
 			const li = document.createElement('li');
 			const a = document.createElement('a');
@@ -133,7 +338,7 @@
 					.then(res => res.text())
 					.then(md => {
 						content.innerHTML = marked.parse(md);
-						if(window.innerWidth <= 700) hideSidebar();
+						if(window.innerWidth <= 700) closeSidebar();
 					})
 					.catch(() => {
 						content.innerHTML = '<p style="color:red">Failed to load ' + file + '</p>';
@@ -142,53 +347,6 @@
 			li.appendChild(a);
 			fileList.appendChild(li);
 		});
-
-		function showSidebar() {
-			sidebar.style.position = 'fixed';
-			sidebar.style.left = '0';
-			sidebar.style.top = '0';
-			sidebar.style.height = '100vh';
-			sidebar.style.zIndex = '1002';
-			sidebar.style.width = '80vw';
-			sidebar.style.maxWidth = '350px';
-			overlay.style.display = 'block';
-			closeBtn.style.display = 'inline';
-		}
-		function hideSidebar() {
-			sidebar.style.position = '';
-			sidebar.style.left = '';
-			sidebar.style.top = '';
-			sidebar.style.height = '';
-			sidebar.style.zIndex = '';
-			sidebar.style.width = '';
-			sidebar.style.maxWidth = '';
-			overlay.style.display = 'none';
-			closeBtn.style.display = 'none';
-		}
-		menuBtn.onclick = showSidebar;
-		closeBtn.onclick = hideSidebar;
-		overlay.onclick = hideSidebar;
-
-		function handleResize() {
-			if(window.innerWidth <= 700) {
-				menuBtn.style.display = 'block';
-				sidebar.style.display = 'block';
-				hideSidebar();
-			} else {
-				menuBtn.style.display = 'none';
-				sidebar.style.position = '';
-				sidebar.style.left = '';
-				sidebar.style.top = '';
-				sidebar.style.height = '';
-				sidebar.style.zIndex = '';
-				sidebar.style.width = '250px';
-				sidebar.style.maxWidth = '';
-				overlay.style.display = 'none';
-				closeBtn.style.display = 'none';
-			}
-		}
-		window.addEventListener('resize', handleResize);
-		handleResize();
 	</script>
 </body>
 </html>
