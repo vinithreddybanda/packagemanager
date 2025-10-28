@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Markdown Compiler Viewer</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+	<style>
+		body { font-family: Arial, sans-serif; margin: 0; display: flex; height: 100vh; }
+		#sidebar { width: 250px; background: #222; color: #fff; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+		#sidebar h2 { margin-top: 0; }
+		#sidebar ul { list-style: none; padding: 0; }
+		#sidebar li { margin: 10px 0; }
+		#sidebar a { color: #90cdf4; text-decoration: none; }
+		#sidebar a.active { font-weight: bold; color: #fff; }
+		#main { flex: 1; padding: 30px; overflow-y: auto; background: #f9f9f9; }
+		.markdown-body { max-width: 900px; margin: auto; }
+		/* Make markdown-body use GitHub style */
+		.markdown-body {
+			box-sizing: border-box;
+			min-width: 200px;
+			padding: 45px;
+			background: #fff;
+			border-radius: 8px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+		}
+	</style>
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+	<div id="sidebar">
+		<h2>Markdown Labs</h2>
+		<ul id="file-list"></ul>
+	</div>
+	<div id="main">
+		<div id="content" class="markdown-body">Select a lab to view its content.</div>
+	</div>
+	<script>
+		// List of markdown files in the workspace
+		const mdFiles = [
+			"docker-commands-lab5.md",
+			"docker-hub-full-lab7.md",
+			"docker-jenkins-cicd-lab9.md",
+			"dockerfile-image-build-lab6.md",
+			"full-cicd-deployment-lab10.md",
+			"gitlab-npm-lab3.md",
+			"jenkins-ngrok-simple-lab1.md",
+			"jenkins-npm-lab-complete2.md",
+			"kubernetes-deployment-lab8.md"
+		];
+
+		const fileList = document.getElementById('file-list');
+		const content = document.getElementById('content');
+
+		mdFiles.forEach((file, idx) => {
+			const li = document.createElement('li');
+			const a = document.createElement('a');
+			a.href = '#';
+			a.textContent = file.replace('.md', '').replace(/-/g, ' ');
+			a.onclick = (e) => {
+				e.preventDefault();
+				document.querySelectorAll('#sidebar a').forEach(el => el.classList.remove('active'));
+				a.classList.add('active');
+				fetch(file)
+					.then(res => res.text())
+					.then(md => {
+						content.innerHTML = marked.parse(md);
+					})
+					.catch(() => {
+						content.innerHTML = '<p style="color:red">Failed to load ' + file + '</p>';
+					});
+			};
+			li.appendChild(a);
+			fileList.appendChild(li);
+		});
+	</script>
+</body>
+</html>
