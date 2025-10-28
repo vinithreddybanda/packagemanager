@@ -4,15 +4,34 @@
 <head>
 	<style>
 		body { font-family: Arial, sans-serif; margin: 0; background: #fff; }
+		#menu-toggle {
+			display: none;
+			background: none;
+			border: none;
+			padding: 12px;
+			margin: 8px;
+			cursor: pointer;
+		}
+		#menu-toggle .bar {
+			display: block;
+			width: 28px;
+			height: 4px;
+			margin: 5px 0;
+			background: #2563eb;
+			border-radius: 2px;
+			transition: 0.3s;
+		}
 		#menu { margin: 0; padding: 16px 0 0 0; background: #fff; border-bottom: 1px solid #eee; }
-		#menu ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; }
-		#menu li { margin: 0 10px 10px 0; }
-		#menu a { text-decoration: none; color: #2563eb; padding: 4px 8px; border-radius: 4px; border: 1px solid #eee; background: #f9f9f9; font-size: 1em; }
-		#menu a.active, #menu a:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
+		#file-list { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; }
+		#file-list li { margin: 0 10px 10px 0; }
+		#file-list a { text-decoration: none; color: #2563eb; padding: 4px 8px; border-radius: 4px; border: 1px solid #eee; background: #f9f9f9; font-size: 1em; }
+		#file-list a.active, #file-list a:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
 		#content { max-width: 900px; margin: 24px auto; padding: 16px; background: #fff; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
 		@media (max-width: 600px) {
-			#menu ul { flex-direction: column; }
-			#menu li { margin: 0 0 8px 0; }
+			#menu-toggle { display: block; }
+			#file-list { display: none; flex-direction: column; }
+			#file-list.open { display: flex; }
+			#file-list li { margin: 0 0 8px 0; }
 			#content { padding: 8px; }
 		}
 	</style>
@@ -103,6 +122,11 @@
 </head>
 <body>
 	<div id="menu">
+		<button id="menu-toggle" aria-label="Open menu">
+			<span class="bar"></span>
+			<span class="bar"></span>
+			<span class="bar"></span>
+		</button>
 		<ul id="file-list"></ul>
 	</div>
 	<div id="content" class="markdown-body">Select a lab to view its content.</div>
@@ -140,6 +164,12 @@
 			};
 			li.appendChild(a);
 			fileList.appendChild(li);
+		});
+
+		// Hamburger menu toggle for mobile
+		const menuToggle = document.getElementById('menu-toggle');
+		menuToggle.addEventListener('click', function() {
+			fileList.classList.toggle('open');
 		});
 	</script>
 </body>
