@@ -88,13 +88,17 @@
 	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
+	<button id="menu-btn" aria-label="Open menu" style="display:none;position:fixed;top:16px;left:16px;z-index:1001;background:#222;color:#fff;border:none;padding:10px 16px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.08);font-size:1.2em;cursor:pointer;">
+		&#9776;
+	</button>
 	<div id="sidebar">
-		<h2>Markdown Labs</h2>
+		<h2>Markdown Labs <span id="close-btn" style="display:none;float:right;cursor:pointer;font-size:1.3em;">&times;</span></h2>
 		<ul id="file-list"></ul>
 	</div>
 	<div id="main">
 		<div id="content" class="markdown-body">Select a lab to view its content.</div>
 	</div>
+	<div id="overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.2);z-index:1000;"></div>
 	<script>
 		// List of markdown files in the workspace
 		const mdFiles = [
@@ -111,6 +115,10 @@
 
 		const fileList = document.getElementById('file-list');
 		const content = document.getElementById('content');
+		const sidebar = document.getElementById('sidebar');
+		const menuBtn = document.getElementById('menu-btn');
+		const closeBtn = document.getElementById('close-btn');
+		const overlay = document.getElementById('overlay');
 
 		mdFiles.forEach((file, idx) => {
 			const li = document.createElement('li');
@@ -125,6 +133,7 @@
 					.then(res => res.text())
 					.then(md => {
 						content.innerHTML = marked.parse(md);
+						if(window.innerWidth <= 700) hideSidebar();
 					})
 					.catch(() => {
 						content.innerHTML = '<p style="color:red">Failed to load ' + file + '</p>';
@@ -133,6 +142,53 @@
 			li.appendChild(a);
 			fileList.appendChild(li);
 		});
+
+		function showSidebar() {
+			sidebar.style.position = 'fixed';
+			sidebar.style.left = '0';
+			sidebar.style.top = '0';
+			sidebar.style.height = '100vh';
+			sidebar.style.zIndex = '1002';
+			sidebar.style.width = '80vw';
+			sidebar.style.maxWidth = '350px';
+			overlay.style.display = 'block';
+			closeBtn.style.display = 'inline';
+		}
+		function hideSidebar() {
+			sidebar.style.position = '';
+			sidebar.style.left = '';
+			sidebar.style.top = '';
+			sidebar.style.height = '';
+			sidebar.style.zIndex = '';
+			sidebar.style.width = '';
+			sidebar.style.maxWidth = '';
+			overlay.style.display = 'none';
+			closeBtn.style.display = 'none';
+		}
+		menuBtn.onclick = showSidebar;
+		closeBtn.onclick = hideSidebar;
+		overlay.onclick = hideSidebar;
+
+		function handleResize() {
+			if(window.innerWidth <= 700) {
+				menuBtn.style.display = 'block';
+				sidebar.style.display = 'block';
+				hideSidebar();
+			} else {
+				menuBtn.style.display = 'none';
+				sidebar.style.position = '';
+				sidebar.style.left = '';
+				sidebar.style.top = '';
+				sidebar.style.height = '';
+				sidebar.style.zIndex = '';
+				sidebar.style.width = '250px';
+				sidebar.style.maxWidth = '';
+				overlay.style.display = 'none';
+				closeBtn.style.display = 'none';
+			}
+		}
+		window.addEventListener('resize', handleResize);
+		handleResize();
 	</script>
 </body>
 </html>
